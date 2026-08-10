@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCENE FILMS — Produtora Audiovisual</title>
+<meta name="description" content="Scene Films é uma produtora audiovisual que traduz ideias e mensagens em experiências visuais que ficam. Vídeos institucionais, comerciais, eventos e conteúdo para redes sociais.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --bg:#0a0a0b;
+    --bg-alt:#131315;
+    --bg-card:#17171a;
+    --fg:#f3f1ea;
+    --muted:#8c8b87;
+    --muted-2:#5c5b58;
+    --accent:#d8a24a;
+    --accent-dim:#8a6a34;
+    --rec:#b5341f;
+    --line:rgba(243,241,234,.12);
+    --line-strong:rgba(243,241,234,.24);
+    --grain-op:.05;
+
+    --display:'Anton', sans-serif;
+    --body:'Inter', sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+
+    --fs-hero: clamp(3rem, 9vw, 8.5rem);
+    --fs-h1: clamp(2.2rem, 5.5vw, 4.5rem);
+    --fs-h2: clamp(1.5rem, 3vw, 2.4rem);
+    --fs-body: clamp(1rem, 1.1vw, 1.125rem);
+    --fs-small: .8125rem;
+    --fs-mono: .75rem;
+
+    --container: 1320px;
+    --gutter: clamp(20px, 5vw, 64px);
+    --ease: cubic-bezier(.16,.84,.44,1);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;scrollbar-color:var(--accent) var(--bg);scrollbar-width:thin;}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:var(--body);
+    font-weight:400;
+    line-height:1.5;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--accent);border:2px solid var(--bg);}
+  ::-webkit-scrollbar-thumb:hover{background:var(--fg);}
+  ::selection{background:var(--accent);color:#0a0a0b;}
+  a{color:inherit;text-decoration:none;}
+  img,video{display:block;max-width:100%;}
+  button{font-family:inherit;cursor:pointer;background:none;border:none;color:inherit;}
+  ul{list-style:none;}
+
+  .wrap{max-width:var(--container);margin:0 auto;padding-inline:var(--gutter);}
+
+  /* film-grain overlay across whole page */
+  .grain{
+    position:fixed;inset:0;pointer-events:none;z-index:999;
+    opacity:var(--grain-op);mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ============ CURSOR ============ */
+  .cursor{
+    position:fixed;top:0;left:0;width:96px;height:96px;border-radius:50%;
+    border:1px solid var(--fg);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
+    pointer-events:none;z-index:998;
+    transform:translate(-50%,-50%) scale(0);
+    opacity:0;
+    transition:transform .35s var(--ease), opacity .35s var(--ease), background .3s;
+    mix-blend-mode:difference;
+  }
+  .cursor.active{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  @media (hover:none){.cursor{display:none;}}
+
+  /* ============ NAV ============ */
+  header.site{
+    position:fixed;top:0;left:0;right:0;z-index:200;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px var(--gutter);
+    transition:transform .5s var(--ease), background .4s, border-color .4s;
+    border-bottom:1px solid transparent;
+  }
+  header.site.scrolled{
+    background:rgba(10,10,11,.82);backdrop-filter:blur(10px);
+    border-color:var(--line);
+  }
+  header.site.hide{transform:translateY(-110%);}
+
+  .logo{font-family:var(--display);font-size:1.35rem;letter-spacing:.04em;display:flex;align-items:center;}
+  .logo span{color:var(--accent);}
+  .logo img{height:34px;width:auto;object-fit:contain;display:block;}
+  .footer-brand .logo img{height:42px;}
+
+  /* ============ MOBILE NAV OVERLAY ============ */
+  .mobile-nav{
+    position:fixed;inset:0;z-index:500;background:rgba(10,10,11,.98);backdrop-filter:blur(10px);
+    display:flex;flex-direction:column;justify-content:center;padding:0 var(--gutter);
+    opacity:0;pointer-events:none;transition:opacity .4s var(--ease);
+  }
+  .mobile-nav.open{opacity:1;pointer-events:auto;}
+  .mobile-nav-close{
+    position:absolute;top:24px;right:var(--gutter);width:44px;height:44px;border-radius:50%;
+    border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;
+  }
+  .mobile-nav-close svg{width:16px;height:16px;stroke:var(--fg);}
+  .mobile-nav a{
+    font-family:var(--display);font-size:2.6rem;text-transform:uppercase;padding:14px 0;
+    border-bottom:1px solid var(--line);color:var(--fg);
+  }
+  .mobile-nav .mn-cta{margin-top:28px;}
+  .mobile-nav .mn-social{display:flex;gap:20px;margin-top:36px;}
+  .mobile-nav .mn-social a{font-family:var(--mono);font-size:.75rem;text-transform:uppercase;border:none;padding:0;letter-spacing:.08em;color:var(--muted);}
+
+  /* ============ QUICK QUOTE MODAL ============ */
+  .qq-overlay{
+    position:fixed;inset:0;z-index:600;background:rgba(10,10,11,.9);backdrop-filter:blur(6px);
+    display:flex;align-items:center;justify-content:center;padding:24px;
+    opacity:0;pointer-events:none;transition:opacity .4s var(--ease);
+  }
+  .qq-overlay.open{opacity:1;pointer-events:auto;}
+  .qq-panel{
+    background:var(--bg-alt);border:1px solid var(--line-strong);max-width:560px;width:100%;
+    padding:44px;position:relative;max-height:88vh;overflow-y:auto;
+    transform:translateY(24px);transition:transform .4s var(--ease);
+  }
+  .qq-overlay.open .qq-panel{transform:translateY(0);}
+  .qq-close{
+    position:absolute;top:20px;right:20px;width:38px;height:38px;border-radius:50%;
+    border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;
+  }
+  .qq-close svg{width:14px;height:14px;stroke:var(--fg);}
+  .qq-eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .qq-title{font-family:var(--display);font-size:1.9rem;text-transform:uppercase;margin-bottom:28px;max-width:16ch;}
+  .qq-types{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:26px;}
+  .qq-type{
+    border:1px solid var(--line-strong);padding:14px 12px;font-family:var(--mono);font-size:.72rem;
+    letter-spacing:.05em;text-transform:uppercase;text-align:center;transition:border-color .3s,background .3s;
+  }
+  .qq-type.active{border-color:var(--accent);background:rgba(216,162,74,.1);color:var(--accent);}
+  .qq-field{margin-bottom:20px;}
+  .qq-field label{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+  .qq-field input, .qq-field textarea{
+    width:100%;background:transparent;border:none;border-bottom:1px solid var(--line-strong);
+    color:var(--fg);font-family:var(--body);font-size:1rem;padding:8px 0;transition:border-color .3s;
+  }
+  .qq-field input:focus, .qq-field textarea:focus{outline:none;border-color:var(--accent);}
+  .qq-note{font-family:var(--mono);font-size:.68rem;color:var(--muted-2);margin-top:18px;letter-spacing:.03em;}
+
+  nav.main{display:flex;gap:36px;align-items:center;}
+  nav.main a{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);position:relative;padding-bottom:3px;
+  }
+  nav.main a::after{
+    content:"";position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--accent);
+    transition:width .35s var(--ease);
+  }
+  nav.main a:hover{color:var(--fg);}
+  nav.main a:hover::after{width:100%;}
+
+  .nav-right{display:flex;align-items:center;gap:18px;}
+  .btn-ghost{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
+    border:1px solid var(--line-strong);padding:10px 18px;border-radius:999px;
+    display:inline-flex;align-items:center;gap:8px;transition:border-color .3s, background .3s;
+  }
+  .btn-ghost:hover{border-color:var(--accent);background:rgba(216,162,74,.08);}
+  .dot-live{width:6px;height:6px;border-radius:50%;background:var(--rec);box-shadow:0 0 8px var(--rec);animation:pulse 1.6s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+  .burger{display:none;width:26px;height:18px;position:relative;}
+  .burger span{position:absolute;left:0;right:0;height:1px;background:var(--fg);}
+  .burger span:nth-child(1){top:0;} .burger span:nth-child(2){top:8px;} .burger span:nth-child(3){top:16px;}
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;
+    padding:0 0 64px;overflow:hidden;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(216,162,74,.10), transparent 60%),
+      linear-gradient(180deg, #0a0a0b 0%, #0d0d0f 55%, #0a0a0b 100%);
+  }
+  .hero-media{
+    position:absolute;inset:0;z-index:0;
+  }
+  .hero-media video, .hero-media .fallback{
+    width:100%;height:100%;object-fit:cover;position:absolute;inset:0;
+  }
+  .hero-media .fallback{
+    background:
+      repeating-linear-gradient(115deg, rgba(216,162,74,.05) 0 2px, transparent 2px 40px),
+      radial-gradient(ellipse 70% 50% at 30% 20%, rgba(181,52,31,.12), transparent 60%),
+      radial-gradient(ellipse 60% 60% at 80% 80%, rgba(216,162,74,.10), transparent 60%),
+      #0a0a0b;
+  }
+  .hero-media::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(10,10,11,.35) 0%, rgba(10,10,11,.55) 60%, var(--bg) 100%);
+  }
+
+  .hero-top{
+    position:relative;z-index:2;padding:110px var(--gutter) 0;
+    display:flex;justify-content:space-between;align-items:flex-start;
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  }
+  .tc{font-variant-numeric:tabular-nums;color:var(--accent);}
+
+  .hero-main{position:relative;z-index:2;padding:0 var(--gutter);margin-top:auto;}
+  .hero-eyebrow{
+    font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);margin-bottom:22px;display:flex;align-items:center;gap:10px;
+  }
+  .hero-eyebrow::before{content:"";width:26px;height:1px;background:var(--accent);}
+  h1.hero-title{
+    font-family:var(--display);font-size:var(--fs-hero);line-height:.94;letter-spacing:-.01em;
+    text-transform:uppercase;max-width:16ch;
+  }
+  h1.hero-title em{font-style:normal;color:transparent;-webkit-text-stroke:1px var(--fg);}
+  .hero-sub{
+    max-width:480px;margin-top:28px;color:var(--muted);font-size:var(--fs-body);font-weight:300;
+  }
+  .hero-actions{display:flex;gap:16px;margin-top:44px;flex-wrap:wrap;}
+  .btn-primary{
+    font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;
+    background:var(--fg);color:var(--bg);padding:16px 30px;border-radius:999px;
+    display:inline-flex;align-items:center;gap:10px;transition:transform .35s var(--ease), background .3s;
+  }
+  .btn-primary:hover{transform:translateY(-3px);background:var(--accent);}
+  .btn-play{
+    font-family:var(--mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;
+    display:inline-flex;align-items:center;gap:12px;color:var(--fg);
+  }
+  .play-ring{
+    width:52px;height:52px;border-radius:50%;border:1px solid var(--line-strong);
+    display:flex;align-items:center;justify-content:center;transition:border-color .3s, transform .3s;
+  }
+  .btn-play:hover .play-ring{border-color:var(--accent);transform:scale(1.08);}
+  .play-ring svg{width:14px;height:14px;fill:var(--fg);}
+
+  .scroll-cue{
+    position:absolute;right:var(--gutter);bottom:28px;z-index:2;
+    writing-mode:vertical-rl;font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;
+    color:var(--muted);display:flex;align-items:center;gap:12px;text-transform:uppercase;
+  }
+  .scroll-cue .line{width:1px;height:52px;background:var(--line-strong);position:relative;overflow:hidden;}
+  .scroll-cue .line::after{
+    content:"";position:absolute;top:-100%;left:0;width:100%;height:100%;background:var(--accent);
+    animation:scrollline 2.2s infinite var(--ease);
+  }
+  @keyframes scrollline{0%{top:-100%;}60%{top:100%;}100%{top:100%;}}
+
+  /* ============ MARQUEE ============ */
+  .marquee-strip{
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:22px 0;overflow:hidden;background:var(--bg-alt);
+  }
+  .marquee-track{display:flex;white-space:nowrap;animation:marquee 32s linear infinite;width:max-content;}
+  .marquee-track span{
+    font-family:var(--display);font-size:1.6rem;letter-spacing:.01em;text-transform:uppercase;
+    color:transparent;-webkit-text-stroke:1px var(--muted-2);padding:0 28px;display:inline-flex;align-items:center;gap:28px;
+  }
+  .marquee-track span i{font-style:normal;color:var(--accent);-webkit-text-stroke:0;font-size:.9rem;}
+  @keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ============ SECTION SHELL ============ */
+  section{padding:140px 0;position:relative;}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:72px;flex-wrap:wrap;}
+  .eyebrow{
+    font-family:var(--mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);
+    display:flex;align-items:center;gap:10px;margin-bottom:18px;
+  }
+  .eyebrow::before{content:"";width:26px;height:1px;background:var(--accent);}
+  h2.section-title{font-family:var(--display);font-size:var(--fs-h1);line-height:1;text-transform:uppercase;max-width:14ch;}
+  .section-note{max-width:360px;color:var(--muted);font-size:.95rem;font-weight:300;}
+
+  .reveal{opacity:0;transform:translateY(36px);transition:opacity .9s var(--ease), transform .9s var(--ease);}
+  .reveal.in-view{opacity:1;transform:translateY(0);}
+  .reveal-stagger > *{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease), transform .8s var(--ease);}
+  .reveal-stagger.in-view > *{opacity:1;transform:translateY(0);}
+  .reveal-stagger.in-view > *:nth-child(1){transition-delay:.03s;}
+  .reveal-stagger.in-view > *:nth-child(2){transition-delay:.11s;}
+  .reveal-stagger.in-view > *:nth-child(3){transition-delay:.19s;}
+  .reveal-stagger.in-view > *:nth-child(4){transition-delay:.27s;}
+  .reveal-stagger.in-view > *:nth-child(5){transition-delay:.35s;}
+  .reveal-stagger.in-view > *:nth-child(6){transition-delay:.43s;}
+  .reveal-stagger.in-view > *:nth-child(7){transition-delay:.51s;}
+
+  /* ============ SERVICES ============ */
+  .services-list{border-top:1px solid var(--line);}
+  .service-row{
+    border-bottom:1px solid var(--line);padding:34px 0;display:grid;
+    grid-template-columns:70px 1.4fr 1fr 70px;align-items:center;gap:24px;
+    transition:padding-left .4s var(--ease), background .4s;position:relative;cursor:pointer;
+  }
+  .service-row:hover{padding-left:18px;background:rgba(216,162,74,.04);}
+  .service-num{font-family:var(--mono);font-size:.8rem;color:var(--accent);}
+  .service-name{font-family:var(--display);font-size:clamp(1.5rem,3.4vw,2.6rem);text-transform:uppercase;letter-spacing:.01em;}
+  .service-desc{color:var(--muted);font-size:.9rem;font-weight:300;}
+  .service-arrow{
+    width:44px;height:44px;border-radius:50%;border:1px solid var(--line-strong);
+    display:flex;align-items:center;justify-content:center;transition:transform .4s var(--ease), border-color .3s;
+    justify-self:end;
+  }
+  .service-row:hover .service-arrow{transform:rotate(45deg);border-color:var(--accent);}
+  .service-arrow svg{width:14px;height:14px;stroke:var(--fg);}
+
+  .service-follow-img{
+    position:fixed;top:0;left:0;width:110px;height:140px;z-index:60;pointer-events:none;
+    overflow:hidden;opacity:0;transform:translate(-50%,-50%) scale(.85);
+    transition:opacity .3s var(--ease), transform .3s var(--ease);
+    box-shadow:0 14px 34px rgba(0,0,0,.5);border:1px solid var(--line-strong);
+  }
+  .service-follow-img.active{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  .service-follow-img img{width:100%;height:100%;object-fit:cover;filter:grayscale(.15) contrast(1.05);}
+  @media (hover:none), (max-width:1024px){ .service-follow-img{display:none;} }
+
+  /* ============ PROCESS (numbered — real sequence) ============ */
+  .process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  .process-step{background:var(--bg);padding:40px 30px;min-height:280px;display:flex;flex-direction:column;justify-content:space-between;transition:background .4s;}
+  .process-step:hover{background:var(--bg-card);}
+  .process-step .num{font-family:var(--mono);font-size:.78rem;color:var(--accent);}
+  .process-step h3{font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin:22px 0 12px;letter-spacing:.01em;}
+  .process-step p{color:var(--muted);font-size:.88rem;font-weight:300;line-height:1.6;}
+  #processo{position:relative;}
+  #processo .process-trail-canvas{
+    position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:40;
+  }
+  @media (hover:none){ #processo .process-trail-canvas{display:none;} }
+
+  /* ============ PORTFOLIO ============ */
+  .portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+  .slate-card{
+    position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--bg-card);
+    cursor:pointer;
+  }
+  .slate-card .plate{
+    position:absolute;inset:0;transition:transform .7s var(--ease);
+  }
+  .slate-card:hover .plate{transform:scale(1.08);}
+  .plate.p1{background:linear-gradient(135deg,#231a10,#0a0a0b 65%),radial-gradient(circle at 70% 20%, rgba(216,162,74,.35), transparent 55%);}
+  .plate.p2{background:linear-gradient(135deg,#1c1112,#0a0a0b 65%),radial-gradient(circle at 30% 70%, rgba(181,52,31,.30), transparent 55%);}
+  .plate.p3{background:linear-gradient(135deg,#14181c,#0a0a0b 65%),radial-gradient(circle at 60% 30%, rgba(140,160,180,.22), transparent 55%);}
+  .plate.p4{background:linear-gradient(135deg,#181510,#0a0a0b 65%),radial-gradient(circle at 40% 60%, rgba(216,162,74,.25), transparent 55%);}
+  .plate.p5{background:linear-gradient(135deg,#150f18,#0a0a0b 65%),radial-gradient(circle at 65% 65%, rgba(140,100,200,.20), transparent 55%);}
+  .plate.p6{background:linear-gradient(135deg,#101a14,#0a0a0b 65%),radial-gradient(circle at 25% 30%, rgba(120,190,140,.18), transparent 55%);}
+
+  .slate-card::after{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(180deg, transparent 40%, rgba(10,10,11,.92) 100%);}
+  .slate-tag{
+    position:absolute;top:20px;left:20px;z-index:3;font-family:var(--mono);font-size:.68rem;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-strong);
+    padding:5px 10px;border-radius:999px;background:rgba(10,10,11,.5);backdrop-filter:blur(4px);
+  }
+  .slate-play{
+    position:absolute;top:20px;right:20px;z-index:3;width:38px;height:38px;border-radius:50%;
+    border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;
+    opacity:0;transform:scale(.7);transition:opacity .35s var(--ease), transform .35s var(--ease);
+    background:rgba(10,10,11,.5);backdrop-filter:blur(4px);
+  }
+  .slate-card:hover .slate-play{opacity:1;transform:scale(1);}
+  .slate-play svg{width:11px;height:11px;fill:var(--fg);}
+  .slate-info{position:absolute;left:22px;right:22px;bottom:20px;z-index:3;}
+  .slate-info .cat{font-family:var(--mono);font-size:.7rem;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;}
+  .slate-info h3{font-family:var(--display);font-size:1.5rem;text-transform:uppercase;margin-top:8px;letter-spacing:.01em;}
+
+  .portfolio-more{text-align:center;margin-top:56px;}
+
+  .slate-card{cursor:pointer;}
+  .plate-video{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;
+    opacity:0;transition:opacity .5s var(--ease);
+  }
+  .plate-video.ready{opacity:1;}
+
+  /* ============ PORTFOLIO LIGHTBOX ============ */
+  .pf-overlay{
+    position:fixed;inset:0;z-index:700;background:rgba(6,6,7,.96);backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;padding:40px 24px;
+    opacity:0;pointer-events:none;transition:opacity .4s var(--ease);
+  }
+  .pf-overlay.open{opacity:1;pointer-events:auto;}
+  .pf-panel{width:100%;max-width:1040px;position:relative;transform:translateY(20px);transition:transform .4s var(--ease);}
+  .pf-overlay.open .pf-panel{transform:translateY(0);}
+  .pf-panel video{width:100%;max-height:78vh;background:#000;display:block;}
+  .pf-close{
+    position:absolute;top:-52px;right:0;width:40px;height:40px;border-radius:50%;
+    border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;
+  }
+  .pf-close svg{width:14px;height:14px;stroke:var(--fg);}
+  .pf-meta{position:absolute;top:-52px;left:0;display:flex;align-items:center;gap:14px;}
+  .pf-tag{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);
+    border:1px solid var(--line-strong);padding:5px 10px;border-radius:999px;
+  }
+  .pf-name{font-family:var(--display);font-size:1.2rem;text-transform:uppercase;}
+  @media (max-width:640px){
+    .pf-meta{position:static;margin-bottom:14px;}
+    .pf-close{position:absolute;top:-44px;}
+  }
+
+  /* animated seam lines between portfolio cards */
+  .slate-card{position:relative;}
+  .slate-card .seam{position:absolute;background:var(--accent);z-index:5;pointer-events:none;}
+  .slate-card .seam-r{top:0;right:-1px;width:1px;height:100%;transform-origin:top;}
+  .slate-card .seam-b{left:0;bottom:-1px;height:1px;width:100%;transform-origin:left;}
+  @keyframes seamLoad{
+    0%{opacity:0;transform:scaleY(0);}
+    35%{opacity:.9;}
+    55%{opacity:.9;transform:scaleY(1);}
+    100%{opacity:0;transform:scaleY(1);}
+  }
+  @keyframes seamLoadH{
+    0%{opacity:0;transform:scaleX(0);}
+    35%{opacity:.9;}
+    55%{opacity:.9;transform:scaleX(1);}
+    100%{opacity:0;transform:scaleX(1);}
+  }
+  .slate-card .seam-r{animation:seamLoad 3.6s ease-in-out infinite;}
+  .slate-card .seam-b{animation:seamLoadH 3.6s ease-in-out infinite;}
+
+  /* ============ STATS ============ */
+  .stats-band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:80px 0;}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;text-align:center;}
+  .stat .num{font-family:var(--display);font-size:clamp(2.4rem,5vw,4rem);color:var(--fg);}
+  .stat .num .accent{color:var(--accent);}
+  .stat .label{margin-top:10px;font-family:var(--mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+
+  /* ============ ABOUT ============ */
+  .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+  .about-media{aspect-ratio:4/5;background:
+      linear-gradient(160deg, #161311, #0a0a0b 70%),
+      radial-gradient(circle at 75% 15%, rgba(216,162,74,.22), transparent 55%);
+    position:relative;overflow:hidden;
+  }
+  .about-media .frame-label{
+    position:absolute;bottom:20px;left:20px;font-family:var(--mono);font-size:.68rem;color:var(--muted);
+    letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line-strong);padding:5px 10px;border-radius:999px;
+  }
+  .about-text p{color:var(--muted);font-weight:300;font-size:1.05rem;line-height:1.75;margin-bottom:22px;}
+  .about-text strong{color:var(--fg);font-weight:600;}
+  .about-signature{font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin-top:30px;color:var(--accent);}
+
+  /* ============ CLIENTS — draggable strip ============ */
+  .clients-section{padding-top:100px;padding-bottom:100px;overflow:hidden;}
+  .clients-head{margin-bottom:44px;}
+  .clients-track-wrap{
+    cursor:grab;user-select:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:36px 0;
+  }
+  .clients-track-wrap.dragging{cursor:grabbing;}
+  .clients-track{display:flex;gap:0;width:max-content;align-items:center;}
+  .client-pill{
+    padding:0 52px;white-space:nowrap;display:flex;align-items:center;gap:52px;
+  }
+  .client-pill img{
+    height:44px;width:auto;max-width:150px;object-fit:contain;
+    filter:grayscale(1) brightness(0) invert(1) opacity(.45);
+    transition:filter .4s var(--ease), opacity .4s var(--ease);
+  }
+  .client-pill:hover img{filter:none;opacity:1;}
+  .client-pill .sep{color:var(--accent);font-size:1rem;}
+  .clients-hint{
+    margin-top:18px;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted-2);display:flex;align-items:center;gap:8px;
+  }
+
+  /* ============ CONTACT ============ */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;}
+  .contact-info h2{font-family:var(--display);font-size:var(--fs-h1);text-transform:uppercase;line-height:.98;max-width:11ch;}
+  .contact-channels{margin-top:48px;display:flex;flex-direction:column;gap:0;}
+  .channel{
+    display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-top:1px solid var(--line);
+  }
+  .contact-channels .channel:last-child{border-bottom:1px solid var(--line);}
+  .channel .label{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .channel .value{font-size:1rem;}
+  .channel .value a:hover{color:var(--accent);}
+  .form-field{margin-bottom:26px;}
+  .form-field label{
+    display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:10px;
+  }
+  .form-field input, .form-field textarea{
+    width:100%;background:transparent;border:none;border-bottom:1px solid var(--line-strong);
+    color:var(--fg);font-family:var(--body);font-size:1rem;padding:10px 0;transition:border-color .3s;
+  }
+  .form-field input:focus, .form-field textarea:focus{outline:none;border-color:var(--accent);}
+  .form-field textarea{resize:none;min-height:80px;}
+  .form-submit{margin-top:12px;}
+
+  /* ============ FOOTER ============ */
+  footer{border-top:1px solid var(--line);padding:70px 0 30px;}
+  .footer-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:60px;border-bottom:1px solid var(--line);}
+  .footer-brand .logo{font-size:1.6rem;}
+  .footer-brand p{margin-top:18px;color:var(--muted);font-size:.9rem;max-width:34ch;font-weight:300;}
+  .footer-col h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;}
+  .footer-col ul li{margin-bottom:12px;}
+  .footer-col ul li a{font-size:.92rem;color:var(--fg);opacity:.85;transition:opacity .3s, color .3s;}
+  .footer-col ul li a:hover{opacity:1;color:var(--accent);}
+  .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:26px;flex-wrap:wrap;gap:16px;}
+  .footer-bottom small{font-family:var(--mono);font-size:.7rem;color:var(--muted-2);letter-spacing:.05em;}
+  .back-top{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;}
+  .back-top:hover{color:var(--accent);}
+
+  /* whatsapp float */
+  .wa-float{
+    position:fixed;right:26px;bottom:26px;z-index:150;width:58px;height:58px;border-radius:50%;
+    background:var(--fg);display:flex;align-items:center;justify-content:center;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);transition:transform .35s var(--ease), background .3s;
+  }
+  .wa-float:hover{transform:scale(1.08);background:var(--accent);}
+  .wa-float svg{width:26px;height:26px;fill:var(--bg);}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:1024px){
+    nav.main{display:none;}
+    .burger{display:block;}
+    .process-grid{grid-template-columns:repeat(2,1fr);}
+    .portfolio-grid{grid-template-columns:repeat(2,1fr);}
+    .stats-grid{grid-template-columns:repeat(2,1fr);row-gap:40px;}
+    .about-grid, .contact-grid{grid-template-columns:1fr;gap:48px;}
+    .footer-top{grid-template-columns:1fr 1fr;row-gap:40px;}
+  }
+  @media (max-width:768px){
+    header.site{padding:16px var(--gutter);}
+    .hero-top{padding:88px var(--gutter) 0;font-size:.65rem;}
+    .hero-main{padding:0 var(--gutter);}
+    .hero{padding-bottom:44px;}
+    h1.hero-title{max-width:100%;line-height:.98;}
+    .hero-sub{max-width:100%;}
+    .hero-actions{gap:12px;}
+    .btn-primary{padding:14px 22px;font-size:.7rem;}
+    .scroll-cue{display:none;}
+    .nav-right .btn-ghost span:not(.dot-live){display:none;}
+    .nav-right .btn-ghost{padding:10px 14px;}
+
+    section{padding:80px 0;}
+    .section-head{margin-bottom:44px;gap:20px;}
+    .section-note{max-width:100%;}
+
+    .marquee-track span{font-size:1.1rem;padding:0 16px;gap:16px;}
+
+    .service-row{grid-template-columns:32px 1fr;row-gap:8px;padding:24px 0;}
+    .service-desc{grid-column:2;}
+    .service-arrow{display:none;}
+    .service-name{font-size:1.5rem;}
+
+    .process-grid{grid-template-columns:1fr;}
+    .process-step{min-height:auto;padding:28px 22px;}
+
+    .portfolio-grid{grid-template-columns:1fr;}
+    .slate-card{aspect-ratio:5/4;}
+
+    .stats-grid{grid-template-columns:1fr 1fr;row-gap:32px;}
+    .stats-band{padding:56px 0;}
+
+    .about-grid{gap:32px;}
+    .about-media{aspect-ratio:16/11;}
+
+    .contact-grid{gap:36px;}
+    .contact-info h2{font-size:2.2rem;max-width:100%;}
+    .channel{flex-direction:column;align-items:flex-start;gap:6px;}
+
+    .footer-top{grid-template-columns:1fr;gap:32px;padding-bottom:36px;}
+    footer{padding:50px 0 24px;}
+    .footer-bottom{flex-direction:column;align-items:flex-start;}
+
+    .wa-float{right:16px;bottom:16px;width:52px;height:52px;}
+
+    .qq-panel{padding:30px 22px;}
+    .qq-types{grid-template-columns:1fr;}
+    .qq-title{font-size:1.5rem;}
+
+    .mobile-nav a{font-size:2rem;}
+  }
+  @media (max-width:640px){
+    .stats-grid{grid-template-columns:1fr 1fr;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="cursor" id="cursor">assistir</div>
+
+<!-- ============ HEADER ============ -->
+<header class="site" id="siteHeader">
+  <a href="#top" class="logo"><img src="assets/images/logo-scene.png" alt="Scene Films"></a>
+  <nav class="main">
+    <a href="#servicos">Serviços</a>
+    <a href="#processo">Processo</a>
+    <a href="#trabalhos">Trabalhos</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#contato">Contato</a>
+  </nav>
+  <div class="nav-right">
+    <button class="btn-ghost" id="openQuoteBtn" type="button"><span class="dot-live"></span> <span>Orçar projeto</span></button>
+    <div class="burger" id="burger"><span></span><span></span><span></span></div>
+  </div>
+</header>
+
+<!-- ============ MOBILE NAV ============ -->
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-close" id="mobileNavClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+  <a href="#servicos">Serviços</a>
+  <a href="#processo">Processo</a>
+  <a href="#trabalhos">Trabalhos</a>
+  <a href="#sobre">Sobre</a>
+  <a href="#contato">Contato</a>
+  <a href="#" class="btn-primary mn-cta" id="mobileNavQuote" style="width:max-content;">Orçar projeto</a>
+  <div class="mn-social">
+    <a href="https://www.instagram.com/scenefillms" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.youtube.com/@Scenefillms" target="_blank" rel="noopener">YouTube</a>
+  </div>
+</div>
+
+<!-- ============ QUICK QUOTE MODAL ============ -->
+<div class="qq-overlay" id="qqOverlay">
+  <div class="qq-panel">
+    <div class="qq-close" id="qqClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+    <div class="qq-eyebrow">Pesquisa rápida</div>
+    <div class="qq-title">Conta em 30 segundos o que você precisa</div>
+    <form id="qqForm">
+      <div class="qq-field">
+        <label>Tipo de projeto</label>
+        <div class="qq-types" id="qqTypes">
+          <div class="qq-type" data-type="Institucional">Institucional</div>
+          <div class="qq-type" data-type="Comercial">Comercial</div>
+          <div class="qq-type" data-type="Evento">Evento</div>
+          <div class="qq-type" data-type="Redes Sociais">Redes Sociais</div>
+        </div>
+      </div>
+      <div class="qq-field"><label for="qqNome">Nome</label><input id="qqNome" type="text" required></div>
+      <div class="qq-field"><label for="qqPrazo">Prazo desejado</label><input id="qqPrazo" type="text" placeholder="Ex: em até 30 dias"></div>
+      <div class="qq-field"><label for="qqMsg">Breve descrição do projeto</label><textarea id="qqMsg" rows="3"></textarea></div>
+      <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Enviar pelo WhatsApp</button>
+      <div class="qq-note">Ao enviar, você será direcionado ao WhatsApp da Scene Films com sua pesquisa já preenchida.</div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-media">
+    <!-- SUBSTITUIR: vídeo de showreel em loop, 16:9, mudo, sem interface (ex: reel.mp4) -->
+    <!-- <video autoplay muted loop playsinline src="assets/video/reel-hero.mp4"></video> -->
+    <div class="fallback"></div>
+  </div>
+
+  <div class="hero-top">
+    <span>GO · BR — Produtora Audiovisual</span>
+    <span class="tc" id="clock">00:00:00</span>
+  </div>
+
+  <div class="hero-main">
+    <div class="hero-eyebrow">Scene Films — desde a ideia até a tela</div>
+    <h1 class="hero-title">TRADUZIMOS IDEIAS EM <em>IMAGEM</em> QUE FICA</h1>
+    <p class="hero-sub">Uma produtora de vídeos desempenha um papel crucial para o sucesso de uma empresa — porque traduz ideias e mensagens em formas visuais que as pessoas realmente lembram. É isso que fazemos, projeto após projeto.</p>
+    <div class="hero-actions">
+      <a href="https://wa.me/5562993150275?text=Ol%C3%A1.%20Gostei%20muito%20do%20seu%20trabalho%2C%20gostaria%20de%20fazer%20um%20or%C3%A7amento." target="_blank" rel="noopener" class="btn-primary">Fale com a gente</a>
+      <a href="https://www.youtube.com/@Scenefillms" target="_blank" rel="noopener" class="btn-play">
+        <span class="play-ring"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+        Assistir reel
+      </a>
+    </div>
+  </div>
+
+  <div class="scroll-cue"><span>Role para explorar</span><span class="line"></span></div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee-strip">
+  <div class="marquee-track">
+    <span><i>●</i>Vídeos Institucionais<i>●</i>Comerciais<i>●</i>Eventos & Coberturas<i>●</i>Conteúdo para Redes Sociais<i>●</i>Motion Design<i>●</i>Vídeos Institucionais<i>●</i>Comerciais<i>●</i>Eventos & Coberturas<i>●</i>Conteúdo para Redes Sociais<i>●</i>Motion Design</span>
+    <span aria-hidden="true"><i>●</i>Vídeos Institucionais<i>●</i>Comerciais<i>●</i>Eventos & Coberturas<i>●</i>Conteúdo para Redes Sociais<i>●</i>Motion Design<i>●</i>Vídeos Institucionais<i>●</i>Comerciais<i>●</i>Eventos & Coberturas<i>●</i>Conteúdo para Redes Sociais<i>●</i>Motion Design</span>
+  </div>
+</div>
+
+<!-- ============ SERVICES ============ -->
+<section id="servicos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="eyebrow">O que fazemos</div>
+        <h2 class="section-title">Serviços</h2>
+      </div>
+      <p class="section-note">Do roteiro à entrega final — cada formato pensado para o objetivo real do seu projeto, não só pra "ficar bonito".</p>
+    </div>
+
+    <div class="services-list reveal" id="servicesList">
+      <div class="service-row" data-img="assets/images/servico-01.jpg">
+        <span class="service-num">01</span>
+        <span class="service-name">Vídeos Institucionais</span>
+        <span class="service-desc">A história, a missão e os bastidores da sua empresa contados com identidade própria.</span>
+        <span class="service-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M5 19L19 5M19 5H8M19 5v11"/></svg></span>
+      </div>
+      <div class="service-row" data-img="assets/images/servico-02.jpg">
+        <span class="service-num">02</span>
+        <span class="service-name">Comerciais & Publicidade</span>
+        <span class="service-desc">Filmes publicitários para campanhas, lançamentos de produto e mídia paga.</span>
+        <span class="service-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M5 19L19 5M19 5H8M19 5v11"/></svg></span>
+      </div>
+      <div class="service-row" data-img="assets/images/servico-03.jpg">
+        <span class="service-num">03</span>
+        <span class="service-name">Eventos & Coberturas</span>
+        <span class="service-desc">Cobertura completa de eventos corporativos, shows e ativações — do briefing à entrega.</span>
+        <span class="service-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M5 19L19 5M19 5H8M19 5v11"/></svg></span>
+      </div>
+      <div class="service-row" data-img="assets/images/servico-04.jpg">
+        <span class="service-num">04</span>
+        <span class="service-name">Conteúdo para Redes Sociais</span>
+        <span class="service-desc">Reels, vídeos verticais e séries pensadas pro algoritmo — sem perder a estética.</span>
+        <span class="service-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M5 19L19 5M19 5H8M19 5v11"/></svg></span>
+      </div>
+      <div class="service-row" data-img="assets/images/servico-05.jpg">
+        <span class="service-num">05</span>
+        <span class="service-name">Motion Design & Pós</span>
+        <span class="service-desc">Animação, color grading e finalização que dão o acabamento final ao projeto.</span>
+        <span class="service-arrow"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M5 19L19 5M19 5H8M19 5v11"/></svg></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="service-follow-img" id="serviceFollowImg"><img src="" alt=""></div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section id="processo">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="eyebrow">Como trabalhamos</div>
+        <h2 class="section-title">O processo</h2>
+      </div>
+      <p class="section-note">Quatro etapas, sempre nessa ordem — é isso que garante prazo e qualidade sem surpresa.</p>
+    </div>
+
+    <canvas class="process-trail-canvas" id="processTrailCanvas"></canvas>
+    <div class="process-grid reveal-stagger">
+      <div class="process-step">
+        <span class="num">CENA 01</span>
+        <div>
+          <h3>Briefing</h3>
+          <p>Entendemos o objetivo real por trás do vídeo antes de pensar em uma única imagem.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <span class="num">CENA 02</span>
+        <div>
+          <h3>Roteiro</h3>
+          <p>Construímos a narrativa: o que mostrar, em que ordem e por quê.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <span class="num">CENA 03</span>
+        <div>
+          <h3>Captação</h3>
+          <p>Dia de filmagem organizado, equipe enxuta e equipamento certo pra cada cena.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <span class="num">CENA 04</span>
+        <div>
+          <h3>Entrega</h3>
+          <p>Edição, cor e som finalizados — pronto pro formato e canal certos.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PORTFOLIO ============ -->
+<section id="trabalhos">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        <div class="eyebrow">Portfólio</div>
+        <h2 class="section-title">Trabalhos recentes</h2>
+      </div>
+      <p class="section-note">Uma seleção de projetos — clique em qualquer card pra assistir ao vídeo completo.</p>
+    </div>
+  </div>
+
+  <div class="portfolio-grid reveal-stagger">
+    <div class="slate-card" data-video="assets/video/portfolio/comercial-naturary.mov">
+      <div class="plate p1"></div>
+      <video class="plate-video" muted loop playsinline preload="metadata" src="assets/video/portfolio/comercial-naturary.mov"></video>
+      <span class="seam seam-r"></span><span class="seam seam-b"></span>
+      <span class="slate-tag">Comercial</span>
+      <span class="slate-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      <div class="slate-info"><span class="cat">Take 01</span><h3>Naturary</h3></div>
+    </div>
+    <div class="slate-card" data-video="assets/video/portfolio/comercial-ray-doces.mov">
+      <div class="plate p2"></div>
+      <video class="plate-video" muted loop playsinline preload="metadata" src="assets/video/portfolio/comercial-ray-doces.mov"></video>
+      <span class="seam seam-r"></span><span class="seam seam-b"></span>
+      <span class="slate-tag">Comercial</span>
+      <span class="slate-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      <div class="slate-info"><span class="cat">Take 02</span><h3>Ray Doces</h3></div>
+    </div>
+    <div class="slate-card" data-video="assets/video/portfolio/evento-casamento-k-g.mov">
+      <div class="plate p3"></div>
+      <video class="plate-video" muted loop playsinline preload="metadata" src="assets/video/portfolio/evento-casamento-k-g.mov"></video>
+      <span class="seam seam-r"></span><span class="seam seam-b"></span>
+      <span class="slate-tag">Evento</span>
+      <span class="slate-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      <div class="slate-info"><span class="cat">Take 03</span><h3>Casamento K & G</h3></div>
+    </div>
+    <div class="slate-card" data-video="assets/video/portfolio/redes-sociais-celeiro-burguer.mov">
+      <div class="plate p4"></div>
+      <video class="plate-video" muted loop playsinline preload="metadata" src="assets/video/portfolio/redes-sociais-celeiro-burguer.mov"></video>
+      <span class="seam seam-r"></span><span class="seam seam-b"></span>
+      <span class="slate-tag">Redes Sociais</span>
+      <span class="slate-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      <div class="slate-info"><span class="cat">Take 04</span><h3>Celeiro Burguer</h3></div>
+    </div>
+    <div class="slate-card" data-video="assets/video/portfolio/redes-sociais-itamarzin-imobiliaria.mov">
+      <div class="plate p5"></div>
+      <video class="plate-video" muted loop playsinline preload="metadata" src="assets/video/portfolio/redes-sociais-itamarzin-imobiliaria.mov"></video>
+      <span class="seam seam-r"></span><span class="seam seam-b"></span>
+      <span class="slate-tag">Redes Sociais</span>
+      <span class="slate-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      <div class="slate-info"><span class="cat">Take 05</span><h3>Itamarzin Imobiliária</h3></div>
+    </div>
+    <div class="slate-card" data-video="assets/video/portfolio/redes-sociais-acb-fibra.mov">
+      <div class="plate p6"></div>
+      <video class="plate-video" muted loop playsinline preload="metadata" src="assets/video/portfolio/redes-sociais-acb-fibra.mov"></video>
+      <span class="seam seam-r"></span><span class="seam seam-b"></span>
+      <span class="slate-tag">Redes Sociais</span>
+      <span class="slate-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+      <div class="slate-info"><span class="cat">Take 06</span><h3>ACB Fibra</h3></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="portfolio-more reveal">
+      <a href="https://www.youtube.com/@Scenefillms" target="_blank" rel="noopener" class="btn-ghost">Ver todos os trabalhos no YouTube</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PORTFOLIO VIDEO LIGHTBOX ============ -->
+<div class="pf-overlay" id="pfOverlay">
+  <div class="pf-panel">
+    <div class="pf-close" id="pfClose"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M6 6l12 12M18 6L6 18"/></svg></div>
+    <div class="pf-meta">
+      <span class="pf-tag" id="pfTag">Comercial</span>
+      <span class="pf-name" id="pfName">Take 01 — Naturary</span>
+    </div>
+    <video id="pfVideo" controls playsinline></video>
+  </div>
+</div>
+</section>
+
+<!-- ============ STATS ============ -->
+<div class="stats-band">
+  <div class="wrap">
+    <div class="stats-grid reveal-stagger">
+      <div class="stat">
+        <div class="num"><span class="accent">+</span><span class="count" data-target="120">0</span></div>
+        <div class="label">Projetos entregues</div>
+      </div>
+      <div class="stat">
+        <div class="num"><span class="count" data-target="98">0</span>%</div>
+        <div class="label">Entregas no prazo</div>
+      </div>
+      <div class="stat">
+        <div class="num"><span class="accent">+</span><span class="count" data-target="40">0</span></div>
+        <div class="label">Clientes atendidos</div>
+      </div>
+      <div class="stat">
+        <div class="num"><span class="count" data-target="5">0</span></div>
+        <div class="label">Anos de estrada</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ABOUT ============ -->
+<section id="sobre">
+  <div class="wrap about-grid">
+    <div class="about-media reveal">
+      <img src="assets/images/equipe-paulo-henrique.jpg" alt="Paulo Henrique — Scene Films em produção" style="width:100%;height:100%;object-fit:cover;">
+      <span class="frame-label">Paulo Henrique — em produção</span>
+    </div>
+    <div class="about-text reveal">
+      <div class="eyebrow">Quem faz</div>
+      <h2 class="section-title" style="margin-bottom:28px;">Sobre a Scene Films</h2>
+      <p>Uma produtora de vídeos desempenha um papel crucial para o sucesso de uma empresa, pois <strong>traduz ideias e mensagens em formas visuais atraentes</strong>. Na Scene Films, cada projeto começa com uma pergunta simples: o que essa marca precisa que as pessoas sintam?</p>
+      <p>A partir daí, unimos roteiro, direção, captação e pós-produção numa equipe enxuta — o suficiente pra manter qualidade de estúdio grande com a agilidade de quem realmente conhece cada cliente.</p>
+      <div class="about-signature">Nada além do essencial. Nada aquém do impacto.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLIENTS — draggable ============ -->
+<section class="clients-section">
+  <div class="wrap clients-head reveal">
+    <div class="eyebrow">Confiança</div>
+    <h2 class="section-title">Empresas atendidas</h2>
+  </div>
+
+  <div class="clients-track-wrap" id="clientsWrap">
+    <div class="clients-track" id="clientsTrack">
+      <div class="client-pill"><img src="assets/images/clients/naturary.png" alt="Naturary"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/acb-fibra.png" alt="ACB Fibra"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/remaf.png" alt="REMAF Transportes"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/celeiro-burger.png" alt="Celeiro Burger"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/itamarzin-imobiliaria.png" alt="Itamarzin Imobiliária"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/palavra-falada.png" alt="Palavra Falada"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/cristo-rei.png" alt="Cristo Rei"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/naturary.png" alt="Naturary"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/acb-fibra.png" alt="ACB Fibra"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/remaf.png" alt="REMAF Transportes"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/celeiro-burger.png" alt="Celeiro Burger"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/itamarzin-imobiliaria.png" alt="Itamarzin Imobiliária"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/palavra-falada.png" alt="Palavra Falada"> <span class="sep">✦</span></div>
+      <div class="client-pill"><img src="assets/images/clients/cristo-rei.png" alt="Cristo Rei"> <span class="sep">✦</span></div>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="clients-hint">← Arraste para o lado — ou deixe deslizar sozinho →</div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contato">
+  <div class="wrap contact-grid">
+    <div class="contact-info reveal">
+      <div class="eyebrow">Vamos gravar</div>
+      <h2>Conta pra gente o que você quer contar</h2>
+      <div class="contact-channels">
+        <div class="channel">
+          <span class="label">WhatsApp</span>
+          <span class="value"><a href="https://wa.me/5562993150275?text=Ol%C3%A1.%20Gostei%20muito%20do%20seu%20trabalho%2C%20gostaria%20de%20fazer%20um%20or%C3%A7amento." target="_blank" rel="noopener">+55 (62) 99315-0275</a></span>
+        </div>
+        <div class="channel">
+          <span class="label">E-mail</span>
+          <span class="value"><a href="mailto:contato@scenefilms.com.br">contato@scenefilms.com.br</a></span>
+        </div>
+        <div class="channel">
+          <span class="label">Instagram</span>
+          <span class="value"><a href="https://www.instagram.com/scenefillms" target="_blank" rel="noopener">@scenefillms</a></span>
+        </div>
+        <div class="channel">
+          <span class="label">YouTube</span>
+          <span class="value"><a href="https://www.youtube.com/@Scenefillms" target="_blank" rel="noopener">@Scenefillms</a></span>
+        </div>
+      </div>
+    </div>
+
+    <form class="contact-form reveal" onsubmit="event.preventDefault(); alert('Formulário de exemplo — conectar a um serviço de envio (Formspree, EmailJS etc.) antes de publicar.');">
+      <div class="form-field"><label for="nome">Nome</label><input id="nome" type="text" required></div>
+      <div class="form-field"><label for="email">E-mail</label><input id="email" type="email" required></div>
+      <div class="form-field"><label for="whats">WhatsApp</label><input id="whats" type="tel"></div>
+      <div class="form-field"><label for="msg">Conte sobre o projeto</label><textarea id="msg" required></textarea></div>
+      <button type="submit" class="btn-primary form-submit">Enviar mensagem</button>
+    </form>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#top" class="logo"><img src="assets/images/logo-scene.png" alt="Scene Films"></a>
+        <p>Produtora audiovisual — traduzimos ideias em imagem que fica, do roteiro à entrega final.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navegação</h4>
+        <ul>
+          <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#processo">Processo</a></li>
+          <li><a href="#trabalhos">Trabalhos</a></li>
+          <li><a href="#sobre">Sobre</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contato</h4>
+        <ul>
+          <li><a href="mailto:contato@scenefilms.com.br">contato@scenefilms.com.br</a></li>
+          <li><a href="https://wa.me/5562993150275?text=Ol%C3%A1.%20Gostei%20muito%20do%20seu%20trabalho%2C%20gostaria%20de%20fazer%20um%20or%C3%A7amento." target="_blank" rel="noopener">WhatsApp</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Redes</h4>
+        <ul>
+          <li><a href="https://www.instagram.com/scenefillms" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.youtube.com/@Scenefillms" target="_blank" rel="noopener">YouTube</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <small>Scene Films © 2026 — todos os direitos reservados</small>
+      <a href="#top" class="back-top">Voltar ao topo ↑</a>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/5562993150275?text=Ol%C3%A1.%20Gostei%20muito%20do%20seu%20trabalho%2C%20gostaria%20de%20fazer%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M12.04 2c-5.5 0-9.96 4.46-9.96 9.96 0 1.76.46 3.48 1.34 5L2 22l5.2-1.36c1.46.8 3.1 1.22 4.84 1.22 5.5 0 9.96-4.46 9.96-9.96S17.54 2 12.04 2zm5.83 14.24c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.12.11-1.8-.11-.42-.13-.95-.3-1.64-.6-2.88-1.24-4.76-4.14-4.9-4.33-.14-.19-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1-2.4.26-.29.58-.36.77-.36.2 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.82 2 .89 2.15.07.15.12.32.02.52-.1.19-.15.32-.3.49-.15.17-.32.38-.45.51-.15.15-.31.32-.13.62.18.3.79 1.31 1.7 2.12 1.17 1.04 2.16 1.37 2.46 1.52.3.15.48.13.65-.08.18-.2.75-.87.95-1.17.2-.3.4-.24.66-.15.27.1 1.71.81 2 .96.3.15.49.22.56.35.08.13.08.75-.16 1.43z"/></svg>
+</a>
+
+<script>
+(function(){
+  // clock
+  var clockEl = document.getElementById('clock');
+  function tick(){
+    var d = new Date();
+    var pad = function(n){return String(n).padStart(2,'0');};
+    clockEl.textContent = pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  }
+  tick(); setInterval(tick, 1000);
+
+  // header hide/show + scrolled state
+  var header = document.getElementById('siteHeader');
+  var lastY = window.scrollY;
+  window.addEventListener('scroll', function(){
+    var y = window.scrollY;
+    header.classList.toggle('scrolled', y > 40);
+    if(y > lastY && y > 200){ header.classList.add('hide'); }
+    else { header.classList.remove('hide'); }
+    lastY = y;
+  }, {passive:true});
+
+  // custom cursor (hero only)
+  var cursor = document.getElementById('cursor');
+  var hero = document.querySelector('.hero');
+  window.addEventListener('mousemove', function(e){
+    cursor.style.left = e.clientX+'px';
+    cursor.style.top = e.clientY+'px';
+  });
+  if(hero){
+    hero.addEventListener('mouseenter', function(){ cursor.classList.add('active'); });
+    hero.addEventListener('mouseleave', function(){ cursor.classList.remove('active'); });
+  }
+  document.querySelectorAll('.slate-card').forEach(function(card){
+    card.addEventListener('mouseenter', function(){ cursor.classList.add('active'); cursor.textContent='assistir'; });
+    card.addEventListener('mouseleave', function(){ cursor.classList.remove('active'); });
+  });
+
+  // reveal on scroll
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){ entry.target.classList.add('in-view'); io.unobserve(entry.target); }
+    });
+  }, {threshold:.18});
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el){ io.observe(el); });
+
+  // counters
+  var counted = false;
+  var counters = document.querySelectorAll('.count');
+  var statsIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting && !counted){
+        counted = true;
+        counters.forEach(function(c){
+          var target = parseInt(c.getAttribute('data-target'),10);
+          var start = 0, duration = 1400, startTime = null;
+          function step(ts){
+            if(!startTime) startTime = ts;
+            var progress = Math.min((ts-startTime)/duration, 1);
+            var eased = 1 - Math.pow(1-progress, 3);
+            c.textContent = Math.floor(eased*target);
+            if(progress < 1) requestAnimationFrame(step);
+            else c.textContent = target;
+          }
+          requestAnimationFrame(step);
+        });
+      }
+    });
+  }, {threshold:.4});
+  var statsBand = document.querySelector('.stats-band');
+  if(statsBand) statsIO.observe(statsBand);
+
+  // clients draggable + autoscroll
+  var wrap = document.getElementById('clientsWrap');
+  var track = document.getElementById('clientsTrack');
+  var pos = 0, speed = 0.5, isDown = false, startX = 0, startPos = 0, dragged = false;
+  var half = 0;
+  function measure(){ half = track.scrollWidth / 2; }
+  measure();
+  window.addEventListener('resize', measure);
+
+  function loop(){
+    if(!isDown){
+      pos -= speed;
+      if(Math.abs(pos) >= half) pos = 0;
+      track.style.transform = 'translateX('+pos+'px)';
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  function down(x){ isDown = true; dragged = false; startX = x; startPos = pos; wrap.classList.add('dragging'); }
+  function move(x){
+    if(!isDown) return;
+    var delta = x - startX;
+    if(Math.abs(delta) > 4) dragged = true;
+    pos = startPos + delta;
+    if(pos > 0) pos -= half;
+    if(Math.abs(pos) >= half) pos += half;
+    track.style.transform = 'translateX('+pos+'px)';
+  }
+  function up(){ isDown = false; wrap.classList.remove('dragging'); }
+
+  wrap.addEventListener('mousedown', function(e){ down(e.clientX); });
+  window.addEventListener('mousemove', function(e){ move(e.clientX); });
+  window.addEventListener('mouseup', up);
+  wrap.addEventListener('touchstart', function(e){ down(e.touches[0].clientX); }, {passive:true});
+  wrap.addEventListener('touchmove', function(e){ move(e.touches[0].clientX); }, {passive:true});
+  wrap.addEventListener('touchend', up);
+  wrap.addEventListener('click', function(e){ if(dragged) e.preventDefault(); });
+
+  // ===== mobile nav =====
+  var burger = document.getElementById('burger');
+  var mobileNav = document.getElementById('mobileNav');
+  var mobileNavClose = document.getElementById('mobileNavClose');
+  function openMobileNav(){ mobileNav.classList.add('open'); }
+  function closeMobileNav(){ mobileNav.classList.remove('open'); }
+  burger.addEventListener('click', openMobileNav);
+  mobileNavClose.addEventListener('click', closeMobileNav);
+  mobileNav.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ closeMobileNav(); });
+  });
+
+  // ===== quick quote modal =====
+  var qqOverlay = document.getElementById('qqOverlay');
+  var qqClose = document.getElementById('qqClose');
+  var openQuoteBtn = document.getElementById('openQuoteBtn');
+  var mobileNavQuote = document.getElementById('mobileNavQuote');
+  var qqTypes = document.getElementById('qqTypes');
+  var selectedType = '';
+
+  function openQuote(){ qqOverlay.classList.add('open'); }
+  function closeQuote(){ qqOverlay.classList.remove('open'); }
+  openQuoteBtn.addEventListener('click', openQuote);
+  mobileNavQuote.addEventListener('click', function(e){ e.preventDefault(); closeMobileNav(); openQuote(); });
+  qqClose.addEventListener('click', closeQuote);
+  qqOverlay.addEventListener('click', function(e){ if(e.target === qqOverlay) closeQuote(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeQuote(); closeMobileNav(); } });
+
+  qqTypes.querySelectorAll('.qq-type').forEach(function(el){
+    el.addEventListener('click', function(){
+      qqTypes.querySelectorAll('.qq-type').forEach(function(t){ t.classList.remove('active'); });
+      el.classList.add('active');
+      selectedType = el.getAttribute('data-type');
+    });
+  });
+
+  document.getElementById('qqForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var nome = document.getElementById('qqNome').value.trim();
+    var prazo = document.getElementById('qqPrazo').value.trim();
+    var msg = document.getElementById('qqMsg').value.trim();
+    var parts = ['Olá! Vim pelo site da Scene Films e gostaria de um orçamento.'];
+    parts.push('Nome: ' + (nome || '-'));
+    parts.push('Tipo de projeto: ' + (selectedType || '-'));
+    if(prazo) parts.push('Prazo desejado: ' + prazo);
+    if(msg) parts.push('Sobre o projeto: ' + msg);
+    var text = encodeURIComponent(parts.join('\n'));
+    window.open('https://wa.me/5562993150275?text=' + text, '_blank');
+    closeQuote();
+  });
+
+  // ===== services: image follows mouse =====
+  var followImg = document.getElementById('serviceFollowImg');
+  var followImgTag = followImg.querySelector('img');
+  document.querySelectorAll('#servicesList .service-row').forEach(function(row){
+    row.addEventListener('mouseenter', function(){
+      followImgTag.src = row.getAttribute('data-img');
+      followImg.classList.add('active');
+    });
+    row.addEventListener('mousemove', function(e){
+      followImg.style.left = (e.clientX + 60) + 'px';
+      followImg.style.top = (e.clientY - 50) + 'px';
+    });
+    row.addEventListener('mouseleave', function(){
+      followImg.classList.remove('active');
+    });
+  });
+
+  // ===== portfolio seam lines: randomize timing so they load out of sync =====
+  document.querySelectorAll('.slate-card .seam').forEach(function(seam){
+    var delay = (Math.random() * 3.6).toFixed(2);
+    var duration = (2.8 + Math.random() * 2.4).toFixed(2);
+    seam.style.animationDelay = delay + 's';
+    seam.style.animationDuration = duration + 's';
+  });
+
+  // ===== portfolio: muted highlight-loop preview + full video lightbox on click =====
+  var pfOverlay = document.getElementById('pfOverlay');
+  var pfVideo = document.getElementById('pfVideo');
+  var pfClose = document.getElementById('pfClose');
+  var pfTag = document.getElementById('pfTag');
+  var pfName = document.getElementById('pfName');
+
+  document.querySelectorAll('.slate-card').forEach(function(card){
+    var vid = card.querySelector('.plate-video');
+    if(!vid) return;
+
+    // pick a short "best moment" window somewhere inside the video for the muted preview loop
+    var previewStart = 0, previewEnd = 4;
+    vid.addEventListener('loadedmetadata', function(){
+      var dur = vid.duration || 8;
+      previewStart = dur > 10 ? dur * 0.35 : 0;
+      previewEnd = Math.min(previewStart + 4, dur - 0.2);
+      vid.currentTime = previewStart;
+      vid.classList.add('ready');
+      vid.play().catch(function(){});
+    });
+    vid.addEventListener('timeupdate', function(){
+      if(vid.currentTime >= previewEnd){ vid.currentTime = previewStart; }
+    });
+    vid.addEventListener('error', function(){ vid.classList.remove('ready'); });
+
+    card.addEventListener('click', function(){
+      var tag = card.querySelector('.slate-tag').textContent;
+      var take = card.querySelector('.slate-info .cat').textContent;
+      var name = card.querySelector('.slate-info h3').textContent;
+      pfTag.textContent = tag;
+      pfName.textContent = take + ' — ' + name;
+      pfVideo.src = card.getAttribute('data-video');
+      pfVideo.currentTime = 0;
+      pfVideo.muted = false;
+      pfOverlay.classList.add('open');
+      pfVideo.play().catch(function(){});
+    });
+  });
+
+  function closeLightbox(){
+    pfOverlay.classList.remove('open');
+    pfVideo.pause();
+    pfVideo.removeAttribute('src');
+    pfVideo.load();
+  }
+  pfClose.addEventListener('click', closeLightbox);
+  pfOverlay.addEventListener('click', function(e){ if(e.target === pfOverlay) closeLightbox(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLightbox(); });
+
+  // ===== process section: mouse-trail line =====
+  var trailCanvas = document.getElementById('processTrailCanvas');
+  if(trailCanvas && window.matchMedia('(hover:hover)').matches){
+    var ctx = trailCanvas.getContext('2d');
+    var processSection = document.getElementById('processo');
+    var points = [];
+    var trailActive = false;
+
+    function resizeCanvas(){
+      var rect = processSection.getBoundingClientRect();
+      trailCanvas.width = rect.width * devicePixelRatio;
+      trailCanvas.height = rect.height * devicePixelRatio;
+      ctx.setTransform(1,0,0,1,0,0);
+      ctx.scale(devicePixelRatio, devicePixelRatio);
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    processSection.addEventListener('mouseenter', function(){ trailActive = true; });
+    processSection.addEventListener('mouseleave', function(){ trailActive = false; points = []; });
+    processSection.addEventListener('mousemove', function(e){
+      var rect = processSection.getBoundingClientRect();
+      points.push({x: e.clientX - rect.left, y: e.clientY - rect.top, t: Date.now()});
+      if(points.length > 60) points.shift();
+    });
+
+    function drawTrail(){
+      var rect = processSection.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+      var now = Date.now();
+      points = points.filter(function(p){ return now - p.t < 700; });
+
+      if(points.length > 1){
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        for(var i = 1; i < points.length; i++){
+          var p0 = points[i-1], p1 = points[i];
+          var age = (now - p1.t) / 700;
+          var opacity = Math.max(0, 1 - age);
+          ctx.strokeStyle = 'rgba(216,162,74,' + (opacity * 0.85) + ')';
+          ctx.lineWidth = Math.max(0.6, 2.4 * (1 - age));
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(p1.x, p1.y);
+          ctx.stroke();
+        }
+      }
+      requestAnimationFrame(drawTrail);
+    }
+    requestAnimationFrame(drawTrail);
+  }
+})();
+</script>
+
+</body>
+</html>
