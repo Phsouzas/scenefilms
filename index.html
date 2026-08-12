@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SCENE FILMS — Produtora Audiovisual</title>
 <meta name="description" content="Scene Films é uma produtora audiovisual que traduz ideias e mensagens em experiências visuais que ficam. Vídeos institucionais, comerciais, eventos e conteúdo para redes sociais.">
+<link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+<meta name="theme-color" content="#0a0a0b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -121,6 +127,7 @@
     border-bottom:1px solid var(--line);color:var(--fg);
   }
   .mobile-nav .mn-cta{margin-top:28px;}
+  .mobile-nav a.mn-cta{color:var(--bg);border-bottom:none;padding:16px 30px;}
   .mobile-nav .mn-social{display:flex;gap:20px;margin-top:36px;}
   .mobile-nav .mn-social a{font-family:var(--mono);font-size:.75rem;text-transform:uppercase;border:none;padding:0;letter-spacing:.08em;color:var(--muted);}
 
@@ -1007,7 +1014,7 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <small>Scene Films © 2026 — todos os direitos reservados</small>
+      <small>Scene Films © <span id="currentYear">2026</span> — todos os direitos reservados</small>
       <a href="#top" class="back-top">Voltar ao topo ↑</a>
     </div>
   </div>
@@ -1019,6 +1026,10 @@
 
 <script>
 (function(){
+  // auto-update footer year
+  var yearEl = document.getElementById('currentYear');
+  if(yearEl) yearEl.textContent = new Date().getFullYear();
+
   // clock
   var clockEl = document.getElementById('clock');
   function tick(){
@@ -1296,7 +1307,7 @@
           ctx.strokeStyle = 'rgba(216,162,74,' + (opacity * 0.85) + ')';
           ctx.lineWidth = Math.max(0.6, 2.4 * (1 - age));
           ctx.beginPath();
-          ctx.mp4eTo(p0.x, p0.y);
+          ctx.moveTo(p0.x, p0.y);
           ctx.lineTo(p1.x, p1.y);
           ctx.stroke();
         }
