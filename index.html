@@ -76,7 +76,39 @@
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* ============ CURSOR ============ */
+  /* ============ INTRO LOADER ============ */
+  .intro-loader{
+    position:fixed;inset:0;z-index:1200;background:#0a0a0b;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+    transition:opacity 1s var(--ease), transform 1s var(--ease);
+  }
+  .intro-video{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    opacity:0;transform:scale(1.06);
+    transition:opacity 1.1s var(--ease), transform 3.5s var(--ease);
+  }
+  .intro-video.playing{opacity:1;transform:scale(1);}
+  .intro-loader::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg, rgba(10,10,11,.5) 0%, rgba(10,10,11,.15) 30%, rgba(10,10,11,.55) 100%);
+  }
+  .intro-overlay-grid{position:absolute;inset:0;z-index:2;padding:34px var(--gutter);}
+  .intro-corner{
+    position:absolute;font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--fg);
+    opacity:0;transition:opacity .8s var(--ease) .3s;
+  }
+  .intro-loader.ready .intro-corner{opacity:.85;}
+  .intro-corner.tl{top:34px;left:var(--gutter);font-family:var(--display);font-size:1.1rem;letter-spacing:.04em;}
+  .intro-corner.tl .intro-dot{color:var(--accent);}
+  .intro-corner.tr{top:34px;right:var(--gutter);color:var(--accent);font-variant-numeric:tabular-nums;}
+  .intro-corner.bl{bottom:34px;left:var(--gutter);}
+  .intro-corner.br{bottom:34px;right:var(--gutter);display:flex;align-items:center;gap:8px;}
+  .intro-loading-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.4s infinite;}
+  .intro-loader.leaving{opacity:0;transform:scale(1.04);pointer-events:none;}
+  @media (max-width:1023px){ .intro-loader{display:none !important;} }
+  @media (prefers-reduced-motion: reduce){ .intro-loader{display:none !important;} }
+  html.intro-skip .intro-loader{display:none !important;}
+  body.intro-active{overflow:hidden;height:100vh;}
   .cursor{
     position:fixed;top:0;left:0;width:96px;height:96px;border-radius:50%;
     border:1px solid var(--fg);
@@ -341,11 +373,11 @@
   .process-step .num{font-family:var(--mono);font-size:.78rem;color:var(--accent);}
   .process-step h3{font-family:var(--display);font-size:1.4rem;text-transform:uppercase;margin:22px 0 12px;letter-spacing:.01em;}
   .process-step p{color:var(--muted);font-size:.88rem;font-weight:300;line-height:1.6;}
-  #processo{position:relative;}
-  #processo .process-trail-canvas{
-    position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:40;
+
+  .site-trail-canvas{
+    position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:90;
   }
-  @media (hover:none){ #processo .process-trail-canvas{display:none;} }
+  @media (hover:none){ .site-trail-canvas{display:none;} }
 
   /* ============ PORTFOLIO ============ */
   .portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
@@ -517,6 +549,12 @@
   .footer-col ul li a:hover{opacity:1;color:var(--accent);}
   .footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:26px;flex-wrap:wrap;gap:16px;}
   .footer-bottom small{font-family:var(--mono);font-size:.7rem;color:var(--muted-2);letter-spacing:.05em;}
+  .footer-giant{
+    width:100%;padding:36px var(--gutter) 0;overflow:hidden;line-height:0;
+    opacity:.9;transition:opacity .5s;
+  }
+  .footer-giant:hover{opacity:1;}
+  .footer-giant img{width:100%;height:auto;display:block;opacity:.94;}
   .back-top{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;}
   .back-top:hover{color:var(--accent);}
 
@@ -603,7 +641,26 @@
 <body>
 
 <div class="grain"></div>
+<canvas class="site-trail-canvas" id="siteTrailCanvas"></canvas>
 <div class="cursor" id="cursor">assistir</div>
+
+<!-- ============ INTRO LOADER (desktop only, plays once per session) ============ -->
+<div class="intro-loader" id="introLoader">
+  <video class="intro-video" id="introVideo" muted playsinline preload="auto" src="assets/video/intro.mp4"></video>
+  <div class="intro-overlay-grid">
+    <span class="intro-corner tl">SCENE<span class="intro-dot">.</span>FILMS</span>
+    <span class="intro-corner tr" id="introClock">00:00:00</span>
+    <span class="intro-corner bl">GO · BR</span>
+    <span class="intro-corner br"><span class="intro-loading-dot"></span> Carregando</span>
+  </div>
+</div>
+<script>
+  (function(){
+    if(window.innerWidth < 1024 || sessionStorage.getItem('sceneIntroPlayed') === '1'){
+      document.documentElement.classList.add('intro-skip');
+    }
+  })();
+</script>
 
 <!-- ============ HEADER ============ -->
 <header class="site" id="siteHeader">
@@ -757,7 +814,6 @@
       <p class="section-note">Quatro etapas, sempre nessa ordem — é isso que garante prazo e qualidade sem surpresa.</p>
     </div>
 
-    <canvas class="process-trail-canvas" id="processTrailCanvas"></canvas>
     <div class="process-grid reveal-stagger">
       <div class="process-step">
         <span class="num">CENA 01</span>
@@ -1018,6 +1074,9 @@
       <a href="#top" class="back-top">Voltar ao topo ↑</a>
     </div>
   </div>
+  <div class="footer-giant reveal">
+    <img src="assets/images/logo-scene-outline.png" alt="Scene Films">
+  </div>
 </footer>
 
 <a class="wa-float" href="https://wa.me/5562993150275?text=Ol%C3%A1.%20Gostei%20muito%20do%20seu%20trabalho%2C%20gostaria%20de%20fazer%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="WhatsApp">
@@ -1032,12 +1091,51 @@
 
   // clock
   var clockEl = document.getElementById('clock');
+  var introClockEl = document.getElementById('introClock');
   function tick(){
     var d = new Date();
     var pad = function(n){return String(n).padStart(2,'0');};
-    clockEl.textContent = pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+    var str = pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+    if(clockEl) clockEl.textContent = str;
+    if(introClockEl) introClockEl.textContent = str;
   }
   tick(); setInterval(tick, 1000);
+
+  // ===== intro loader: fullscreen video reveal, desktop only, once per session =====
+  var introLoader = document.getElementById('introLoader');
+  var introVideo = document.getElementById('introVideo');
+  var introSkipped = document.documentElement.classList.contains('intro-skip');
+
+  if(introLoader && !introSkipped){
+    document.body.classList.add('intro-active');
+    var minTime = 2200, maxTime = 4800, started = Date.now(), finished = false;
+
+    function endIntro(){
+      if(finished) return;
+      finished = true;
+      sessionStorage.setItem('sceneIntroPlayed', '1');
+      introLoader.classList.add('leaving');
+      document.body.classList.remove('intro-active');
+      setTimeout(function(){ introLoader.remove(); }, 1100);
+    }
+
+    introVideo.addEventListener('canplay', function(){
+      introVideo.classList.add('playing');
+      introLoader.classList.add('ready');
+      introVideo.play().catch(function(){});
+    });
+    introVideo.addEventListener('ended', function(){
+      var elapsed = Date.now() - started;
+      var wait = Math.max(0, minTime - elapsed);
+      setTimeout(endIntro, wait);
+    });
+    introVideo.addEventListener('error', function(){ endIntro(); });
+    setTimeout(endIntro, maxTime);
+    // if the video never fires canplay (slow/broken source), still reveal the site
+    setTimeout(function(){ if(!introVideo.classList.contains('playing')) endIntro(); }, 1800);
+  } else if(introLoader){
+    introLoader.remove();
+  }
 
   // header hide/show + scrolled state
   var header = document.getElementById('siteHeader');
@@ -1265,35 +1363,33 @@
   pfOverlay.addEventListener('click', function(e){ if(e.target === pfOverlay) closeLightbox(); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLightbox(); });
 
-  // ===== process section: mouse-trail line =====
-  var trailCanvas = document.getElementById('processTrailCanvas');
+  // ===== site-wide mouse-trail line (paused over the portfolio) =====
+  var trailCanvas = document.getElementById('siteTrailCanvas');
   if(trailCanvas && window.matchMedia('(hover:hover)').matches){
     var ctx = trailCanvas.getContext('2d');
-    var processSection = document.getElementById('processo');
+    var portfolioSection = document.getElementById('trabalhos');
     var points = [];
-    var trailActive = false;
+    var trailPaused = false;
 
     function resizeCanvas(){
-      var rect = processSection.getBoundingClientRect();
-      trailCanvas.width = rect.width * devicePixelRatio;
-      trailCanvas.height = rect.height * devicePixelRatio;
+      trailCanvas.width = window.innerWidth * devicePixelRatio;
+      trailCanvas.height = window.innerHeight * devicePixelRatio;
       ctx.setTransform(1,0,0,1,0,0);
       ctx.scale(devicePixelRatio, devicePixelRatio);
     }
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    processSection.addEventListener('mouseenter', function(){ trailActive = true; });
-    processSection.addEventListener('mouseleave', function(){ trailActive = false; points = []; });
-    processSection.addEventListener('mousemove', function(e){
-      var rect = processSection.getBoundingClientRect();
-      points.push({x: e.clientX - rect.left, y: e.clientY - rect.top, t: Date.now()});
+    document.addEventListener('mousemove', function(e){
+      trailPaused = !!(portfolioSection && portfolioSection.contains(e.target));
+      if(trailPaused) return;
+      points.push({x: e.clientX, y: e.clientY, t: Date.now()});
       if(points.length > 60) points.shift();
     });
+    document.addEventListener('mouseleave', function(){ points = []; });
 
     function drawTrail(){
-      var rect = processSection.getBoundingClientRect();
-      ctx.clearRect(0, 0, rect.width, rect.height);
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
       var now = Date.now();
       points = points.filter(function(p){ return now - p.t < 700; });
 
