@@ -268,6 +268,37 @@
     text-transform:uppercase;max-width:16ch;
   }
   h1.hero-title em{font-style:normal;color:transparent;-webkit-text-stroke:1px var(--fg);}
+
+  /* ============ GLITCH / GLOW / RGB-SPLIT HEADINGS ============ */
+  .glitch-text{
+    --gx:0px; --gy:0px; --split:0px; --glow:0;
+    position:relative;
+    text-shadow:
+      calc(var(--split) * -1) 0 0 rgba(255,70,70,var(--glow)),
+      var(--split) 0 0 rgba(70,190,255,var(--glow)),
+      var(--gx) var(--gy) 22px rgba(216,162,74, calc(var(--glow) * 0.85)),
+      calc(var(--gx) * -1) calc(var(--gy) * -1) 40px rgba(216,162,74, calc(var(--glow) * 0.4));
+    transition:text-shadow .3s ease-out;
+    will-change:text-shadow, filter;
+  }
+  @keyframes glitchReveal{
+    0%{ filter:blur(16px); opacity:0; letter-spacing:.2em;
+        text-shadow:8px 0 0 rgba(255,70,70,.85), -8px 0 0 rgba(70,190,255,.85), 0 0 46px rgba(216,162,74,.9);}
+    30%{ filter:blur(3px); opacity:1; letter-spacing:.02em;
+        text-shadow:4px 0 0 rgba(255,70,70,.7), -4px 0 0 rgba(70,190,255,.7), 0 0 26px rgba(216,162,74,.7);}
+    48%{ filter:blur(0); letter-spacing:0;
+        text-shadow:-3px 0 0 rgba(255,70,70,.5), 3px 0 0 rgba(70,190,255,.5), 0 0 14px rgba(216,162,74,.5);}
+    62%{ text-shadow:2px 0 0 rgba(255,70,70,.4), -2px 0 0 rgba(70,190,255,.4), 0 0 8px rgba(216,162,74,.4);}
+    100%{ filter:blur(0); opacity:1; letter-spacing:0; text-shadow:none;}
+  }
+  .glitch-text.glitch-play{ animation:glitchReveal 1.15s cubic-bezier(.16,.84,.44,1) both; }
+  @media (prefers-reduced-motion: reduce){
+    .glitch-text.glitch-play{ animation:none; }
+  }
+  @media (hover:none){
+    .glitch-text{ --glow:0 !important; }
+  }
+
   .hero-sub{
     max-width:480px;margin-top:28px;color:var(--muted);font-size:var(--fs-body);font-weight:300;
   }
@@ -733,7 +764,7 @@
 
   <div class="hero-main">
     <div class="hero-eyebrow">Scene Films — desde a ideia até a tela</div>
-    <h1 class="hero-title">TRADUZIMOS IDEIAS EM <em>IMAGEM</em> QUE FICA</h1>
+    <h1 class="hero-title glitch-text">TRADUZIMOS IDEIAS EM <em>IMAGEM</em> QUE FICA</h1>
     <p class="hero-sub">Uma produtora de vídeos desempenha um papel crucial para o sucesso de uma empresa — porque traduz ideias e mensagens em formas visuais que as pessoas realmente lembram. É isso que fazemos, projeto após projeto.</p>
     <div class="hero-actions">
       <a href="https://wa.me/5562993150275?text=Ol%C3%A1.%20Gostei%20muito%20do%20seu%20trabalho%2C%20gostaria%20de%20fazer%20um%20or%C3%A7amento." target="_blank" rel="noopener" class="btn-primary">Fale com a gente</a>
@@ -761,7 +792,7 @@
     <div class="section-head reveal">
       <div>
         <div class="eyebrow">O que fazemos</div>
-        <h2 class="section-title">Serviços</h2>
+        <h2 class="section-title glitch-text">Serviços</h2>
       </div>
       <p class="section-note">Do roteiro à entrega final — cada formato pensado para o objetivo real do seu projeto, não só pra "ficar bonito".</p>
     </div>
@@ -809,7 +840,7 @@
     <div class="section-head reveal">
       <div>
         <div class="eyebrow">Como trabalhamos</div>
-        <h2 class="section-title">O processo</h2>
+        <h2 class="section-title glitch-text">O processo</h2>
       </div>
       <p class="section-note">Quatro etapas, sempre nessa ordem — é isso que garante prazo e qualidade sem surpresa.</p>
     </div>
@@ -853,7 +884,7 @@
     <div class="section-head reveal">
       <div>
         <div class="eyebrow">Portfólio</div>
-        <h2 class="section-title">Trabalhos recentes</h2>
+        <h2 class="section-title glitch-text">Trabalhos recentes</h2>
       </div>
       <p class="section-note">Uma seleção de projetos — clique em qualquer card pra assistir ao vídeo completo.</p>
     </div>
@@ -963,7 +994,7 @@
     </div>
     <div class="about-text reveal">
       <div class="eyebrow">Quem faz</div>
-      <h2 class="section-title" style="margin-bottom:28px;">Sobre a Scene Films</h2>
+      <h2 class="section-title glitch-text" style="margin-bottom:28px;">Sobre a Scene Films</h2>
       <p>Uma produtora de vídeos desempenha um papel crucial para o sucesso de uma empresa, pois <strong>traduz ideias e mensagens em formas visuais atraentes</strong>. Na Scene Films, cada projeto começa com uma pergunta simples: o que essa marca precisa que as pessoas sintam?</p>
       <p>A partir daí, unimos roteiro, direção, captação e pós-produção numa equipe enxuta — o suficiente pra manter qualidade de estúdio grande com a agilidade de quem realmente conhece cada cliente.</p>
       <div class="about-signature">Nada além do essencial. Nada aquém do impacto.</div>
@@ -975,7 +1006,7 @@
 <section class="clients-section">
   <div class="wrap clients-head reveal">
     <div class="eyebrow">Confiança</div>
-    <h2 class="section-title">Empresas atendidas</h2>
+    <h2 class="section-title glitch-text">Empresas atendidas</h2>
   </div>
 
   <div class="clients-track-wrap" id="clientsWrap">
@@ -1006,7 +1037,7 @@
   <div class="wrap contact-grid">
     <div class="contact-info reveal">
       <div class="eyebrow">Vamos gravar</div>
-      <h2>Conta pra gente o que você quer contar</h2>
+      <h2 class="glitch-text">Conta pra gente o que você quer contar</h2>
       <div class="contact-channels">
         <div class="channel">
           <span class="label">WhatsApp</span>
@@ -1171,6 +1202,41 @@
     });
   }, {threshold:.18});
   document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el){ io.observe(el); });
+
+  // ===== glitch headings: entrance reveal on scroll =====
+  var glitchIO = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        entry.target.classList.add('glitch-play');
+        glitchIO.unobserve(entry.target);
+      }
+    });
+  }, {threshold:.4});
+  document.querySelectorAll('.glitch-text').forEach(function(el){ glitchIO.observe(el); });
+  document.addEventListener('animationend', function(e){
+    if(e.target.classList.contains('glitch-play')) e.target.classList.remove('glitch-play');
+  });
+
+  // ===== glitch headings: glow + chromatic split follows the cursor on hover =====
+  if(window.matchMedia('(hover:hover)').matches){
+    document.querySelectorAll('.glitch-text').forEach(function(el){
+      el.addEventListener('mousemove', function(e){
+        var rect = el.getBoundingClientRect();
+        var relX = (e.clientX - rect.left) / rect.width - 0.5;   // -0.5 .. 0.5
+        var relY = (e.clientY - rect.top) / rect.height - 0.5;
+        el.style.setProperty('--gx', (relX * 22).toFixed(1) + 'px');
+        el.style.setProperty('--gy', (relY * 22).toFixed(1) + 'px');
+        el.style.setProperty('--split', (2.5 + Math.abs(relX) * 4).toFixed(1) + 'px');
+        el.style.setProperty('--glow', '1');
+      });
+      el.addEventListener('mouseleave', function(){
+        el.style.setProperty('--glow', '0');
+        el.style.setProperty('--gx', '0px');
+        el.style.setProperty('--gy', '0px');
+        el.style.setProperty('--split', '0px');
+      });
+    });
+  }
 
   // counters
   var counted = false;
