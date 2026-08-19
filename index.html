@@ -5,16 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SCENE FILMS — Produtora Audiovisual</title>
 <meta name="description" content="Scene Films é uma produtora audiovisual que traduz ideias e mensagens em experiências visuais que ficam. Vídeos institucionais, comerciais, eventos e conteúdo para redes sociais.">
-<link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+<link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png?v=2">
 <meta name="theme-color" content="#0a0a0b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  @font-face{
+    font-family:'SceneAccent';
+    src:url('assets/fonts/accent-display.woff2?v=2') format('woff2');
+    font-weight:400 700;
+    font-style:normal;
+    font-display:swap;
+  }
   /* ============ TOKENS ============ */
   :root{
     --bg:#0a0a0b;
@@ -516,7 +523,11 @@
   }
   .about-media .frame-label{
     position:absolute;bottom:20px;left:20px;font-family:var(--mono);font-size:.68rem;color:var(--muted);
-    letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line-strong);padding:5px 10px;border-radius:999px;
+    letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line-strong);padding:5px 10px;border-radius:999px;z-index:2;
+  }
+  .about-photo{
+    position:absolute;left:0;top:-16%;width:100%;height:132%;object-fit:cover;
+    will-change:transform;
   }
   .about-text p{color:var(--muted);font-weight:300;font-size:1.05rem;line-height:1.75;margin-bottom:22px;}
   .about-text strong{color:var(--fg);font-weight:600;}
@@ -989,7 +1000,7 @@
 <section id="sobre">
   <div class="wrap about-grid">
     <div class="about-media reveal">
-      <img src="assets/images/equipe-paulo-henrique.jpg" alt="Paulo Henrique — Scene Films em produção" style="width:100%;height:100%;object-fit:cover;">
+      <img class="about-photo" id="aboutPhoto" src="assets/images/equipe-paulo-henrique.jpg" alt="Paulo Henrique — Scene Films em produção">
       <span class="frame-label">Paulo Henrique — em produção</span>
     </div>
     <div class="about-text reveal">
@@ -1202,6 +1213,32 @@
     });
   }, {threshold:.18});
   document.querySelectorAll('.reveal, .reveal-stagger').forEach(function(el){ io.observe(el); });
+
+  // ===== team photo: subtle parallax tied to scroll position =====
+  var aboutMedia = document.querySelector('.about-media');
+  var aboutPhoto = document.getElementById('aboutPhoto');
+  if(aboutMedia && aboutPhoto && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var parallaxTicking = false;
+    function updateParallax(){
+      var rect = aboutMedia.getBoundingClientRect();
+      var winH = window.innerHeight;
+      var elCenter = rect.top + rect.height / 2;
+      var viewCenter = winH / 2;
+      var offset = (viewCenter - elCenter) * 0.12;
+      offset = Math.max(-48, Math.min(48, offset));
+      aboutPhoto.style.transform = 'translateY(' + offset.toFixed(1) + 'px)';
+      parallaxTicking = false;
+    }
+    function onScrollParallax(){
+      if(!parallaxTicking){
+        requestAnimationFrame(updateParallax);
+        parallaxTicking = true;
+      }
+    }
+    window.addEventListener('scroll', onScrollParallax, {passive:true});
+    window.addEventListener('resize', onScrollParallax);
+    updateParallax();
+  }
 
   // ===== glitch headings: entrance reveal on scroll =====
   var glitchIO = new IntersectionObserver(function(entries){
